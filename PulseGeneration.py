@@ -330,6 +330,27 @@ def anti_plume_pulse(sampling_rate, params):
     total_length = round(params['onset'] + params['offset'] + len(pulse) / sampling_rate, 10)
     return np.hstack((onset, anti_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
 
+
+def binary_pulse(sampling_rate, parmas):
+    '''
+    Creates a pulse using a binary valve file, e.g. a set of zeros or ones that indicate when the valve
+    should be open or closed
+    '''
+    binary = np.load(params['data_path'])
+    assert min(binary) == 0, 'Binary minimum should be zero'
+    assert max(binary) == 1, 'Binary maximum should be one'
+    resampled = signal.resample(plume, int(len(bianry)*(sampling_rate/params['data_fs'])))
+
+    duration = len(resampled)/sampling_rate
+    t = np.linspace(0, duration, sampling_rate * duration)
+
+    onset = np.zeros(int(sampling_rate * params['onset']))
+    offset = np.zeros(int(sampling_rate * params['offset']))
+
+    total_length = round(params['onset'] + params['offset'] + len(pulse)/sampling_rate, 10)
+    return np.hstack((onset, resampled, offset)), np.linsapce(0, total_length, total_length*sampling_rate)
+
+
 def dummy_noise_pulse(sampling_rate, params):
     # Build main portion of pulse
     pulse_length = int(sampling_rate / params['frequency'])
