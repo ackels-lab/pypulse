@@ -338,7 +338,8 @@ def binary_pulse(sampling_rate, params):
     binary = np.load(params['data_path'])
     assert min(binary) == 0, 'Binary minimum should be zero'
     assert max(binary) == 1, 'Binary maximum should be one'
-    resampled = signal.resample(binary, int(len(binary) * (sampling_rate / params['data_fs'])))
+    assert params["data_fs"] == sampling_rate, 'Sampling rates need to match'
+    #resampled = signal.resample(binary, int(len(binary) * (sampling_rate / params['data_fs'])))
 
     #duration = len(resampled)/sampling_rate
     #t = np.linspace(0, duration, sampling_rate * duration)
@@ -346,8 +347,8 @@ def binary_pulse(sampling_rate, params):
     onset = np.zeros(int(sampling_rate * params['onset']))
     offset = np.zeros(int(sampling_rate * params['offset']))
 
-    total_length = round(params['onset'] + params['offset'] + len(resampled)/sampling_rate, 10)
-    return np.hstack((onset, resampled, offset)), np.linspace(0, total_length, total_length * sampling_rate)
+    total_length = round(params['onset'] + params['offset'] + len(binary)/sampling_rate, 10)
+    return np.hstack((onset, binary, offset)), np.linspace(0, total_length, total_length * sampling_rate)
 
 
 def dummy_noise_pulse(sampling_rate, params):
