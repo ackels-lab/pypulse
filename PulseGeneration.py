@@ -331,7 +331,7 @@ def anti_plume_pulse(sampling_rate, params):
     return np.hstack((onset, anti_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
 
 
-def binary_pulse(sampling_rate, parmas):
+def binary_pulse(sampling_rate, params):
     '''
     Creates a pulse using a binary valve file, e.g. a set of zeros or ones that indicate when the valve
     should be open or closed
