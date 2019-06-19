@@ -339,7 +339,7 @@ def binary_pulse(sampling_rate, params):
     binary = np.load(params['data_path'])
     assert min(binary) == 0, 'Binary minimum should be zero'
     assert max(binary) == 1, 'Binary maximum should be one'
-    resampled = signal.resample(binary, int(len(bianry)*(sampling_rate/params['data_fs'])))
+    resampled = signal.resample(binary, int(len(binary)*(sampling_rate/params['data_fs'])))
 
     duration = len(resampled)/sampling_rate
     t = np.linspace(0, duration, sampling_rate * duration)
