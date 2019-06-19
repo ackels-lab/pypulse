@@ -1,6 +1,5 @@
 import scipy.signal as signal
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.io as sio
 
 
@@ -321,7 +320,7 @@ def anti_plume_pulse(sampling_rate, params):
     duration = len(resampled) / sampling_rate
     t = np.linspace(0, duration, sampling_rate * duration)
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=resampled)) / 2) + 0.5
-    anti_pulse = [1-i for i in pulse]
+    anti_pulse = [1 - i for i in pulse]
 
     # Attach onset and offset
     onset = np.zeros(int(sampling_rate * params['onset']))
@@ -339,16 +338,16 @@ def binary_pulse(sampling_rate, params):
     binary = np.load(params['data_path'])
     assert min(binary) == 0, 'Binary minimum should be zero'
     assert max(binary) == 1, 'Binary maximum should be one'
-    resampled = signal.resample(binary, int(len(binary)*(sampling_rate/params['data_fs'])))
+    resampled = signal.resample(binary, int(len(binary) * (sampling_rate / params['data_fs'])))
 
-    duration = len(resampled)/sampling_rate
-    t = np.linspace(0, duration, sampling_rate * duration)
+    #duration = len(resampled)/sampling_rate
+    #t = np.linspace(0, duration, sampling_rate * duration)
 
     onset = np.zeros(int(sampling_rate * params['onset']))
     offset = np.zeros(int(sampling_rate * params['offset']))
 
     total_length = round(params['onset'] + params['offset'] + len(resampled)/sampling_rate, 10)
-    return np.hstack((onset, resampled, offset)), np.linsapce(0, total_length, total_length*sampling_rate)
+    return np.hstack((onset, resampled, offset)), np.linspace(0, total_length, total_length * sampling_rate)
 
 
 def dummy_noise_pulse(sampling_rate, params):
