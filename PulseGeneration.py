@@ -332,23 +332,24 @@ def anti_plume_pulse(sampling_rate, params):
 
 def binary_pulse(sampling_rate, params):
     '''
-    Creates a pulse using a binary valve file, e.g. a set of zeros or ones that indicate when the valve
-    should be open or closed
+    Creates a pulse from a value passed to it 
     '''
-    binary = np.load(params['data_path'])
-    assert min(binary) == 0, 'Binary minimum should be zero'
-    assert max(binary) == 1, 'Binary maximum should be one'
-    assert params["data_fs"] == sampling_rate, 'Sampling rates need to match'
-    #resampled = signal.resample(binary, int(len(binary) * (sampling_rate / params['data_fs'])))
 
-    #duration = len(resampled)/sampling_rate
-    #t = np.linspace(0, duration, sampling_rate * duration)
-
+    binary = params['value_to_binarise']
+    
+    assert binary >= 0, 'Binary minimum should be zero'
+    assert binary <= 2**params['num_of_bins'] - 1, 'Binary maximum should be less than %s' % str(2**params['num_of_bins'])
+    bin_width = params['bin_size']*sampling_rate
+    binned = bin(binary)[2:]
+    while len(binned) < params['num_of_bins']:
+        binned = '0' + binned
+    bin_output = []
     onset = np.zeros(int(sampling_rate * params['onset']))
     offset = np.zeros(int(sampling_rate * params['offset']))
-
-    total_length = round(params['onset'] + params['offset'] + len(binary)/sampling_rate, 10)
-    return np.hstack((onset, binary, offset)), np.linspace(0, total_length, total_length * sampling_rate)
+    
+    bin_pulse = [int(i) for i in binned for j in range(int(bin_width))]
+    total_length = round(params['onset'] + params['offset'] + len(bin_pulse)/sampling_rate, 10)
+    return np.hstack((onset, bin_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
 
 
 def dummy_noise_pulse(sampling_rate, params):
