@@ -332,11 +332,11 @@ def anti_plume_pulse(sampling_rate, params):
 
 def binary_pulse(sampling_rate, params):
     '''
-    Creates a pulse from a value passed to it 
+    Creates a pulse from a value passed to it
     '''
 
     binary = params['value_to_binarise']
-    
+
     assert binary >= 0, 'Binary minimum should be zero'
     assert binary <= 2**params['num_of_bins'] - 1, 'Binary maximum should be less than %s' % str(2**params['num_of_bins'])
     bin_width = params['bin_size']*sampling_rate
@@ -344,10 +344,15 @@ def binary_pulse(sampling_rate, params):
     while len(binned) < params['num_of_bins']:
         binned = '0' + binned
     bin_output = []
+    bin_pulse = [int(i) for i in binned for j in range(int(bin_width))]
+
+
+    duration = len(bin_pulse) / sampling_rate
+    t = np.linspace(0, duration, sampling_rate * duration)
+    bin_pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=bin_pulse))/ 2) + 0.5
     onset = np.zeros(int(sampling_rate * params['onset']))
     offset = np.zeros(int(sampling_rate * params['offset']))
-    
-    bin_pulse = [int(i) for i in binned for j in range(int(bin_width))]
+
     total_length = round(params['onset'] + params['offset'] + len(bin_pulse)/sampling_rate, 10)
     return np.hstack((onset, bin_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
 
@@ -416,5 +421,3 @@ def multi_noise_pulse(sampling_rate, global_onset, global_offset, params_list):
 # plt.xlim((-0.1, 2.1))
 # plt.ylim((-0.1, 1.1))
 # plt.show()
-
-
