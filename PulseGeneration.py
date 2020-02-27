@@ -296,7 +296,6 @@ def plume_pulse(sampling_rate, params):
     duration = len(resampled) / sampling_rate
     t = np.linspace(0, duration, sampling_rate * duration)
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=resampled)) / 2) + 0.5
-    print(len(pulse))
 
     # Attach onset and offset
     onset = np.zeros(int(sampling_rate * params['onset']))
@@ -356,8 +355,6 @@ def binary_pulse(sampling_rate, params):
         bin_pulse = bin_pulse * shattered_pulse
     onset = np.zeros(int(sampling_rate * params['onset']))
     offset = np.zeros(int(sampling_rate * params['offset']))
-    for i in params:
-        print(i, params[i])
 
     total_length = round(params['onset'] + params['offset'] + len(bin_pulse)/sampling_rate, 10)
     return np.hstack((onset, bin_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
