@@ -43,7 +43,7 @@ def make_pulse(sampling_rate, global_onset, global_offset, params_list, *,invert
     invert_vect = np.ones(len(pulses))
     for i in invert_chan_list:
         invert_vect[i] = -1
-    pulse_matrix = np.zeros((len(pulses), len(longest_t) + int((global_onset + global_offset) * sampling_rate))) * invert_vect
+    pulse_matrix = np.zeros((len(pulses), len(longest_t) + int((global_onset + global_offset) * sampling_rate))) * invert_vect[:, np.newaxis]
     
     for p, pulse in enumerate(pulses):
         pulse_matrix[p][int(global_onset * sampling_rate):int(global_onset * sampling_rate)+len(pulse)] = pulse
