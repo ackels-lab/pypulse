@@ -31,6 +31,7 @@ def make_pulse(sampling_rate, global_onset, global_offset, params_list, *,invert
             longest_t = t
     
     pulse_matrix = []
+    print(invert_chan_list)
     for pulse_index, this_pulse in enumerate(pulses):
         if pulse_index in invert_chan_list:
             full_pulse = np.ones(len(longest_t)+ int((global_onset + global_offset) * sampling_rate))
