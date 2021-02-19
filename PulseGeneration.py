@@ -4,7 +4,7 @@ import scipy.io as sio
 
 
 def square_pulse(sampling_rate, duration, frequency, duty):
-    t = np.linspace(0, duration, sampling_rate * duration, endpoint=False)
+    t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
     return (np.array(signal.square(2 * np.pi * frequency * t, duty=duty)) / 2) + 0.5, t
 
 
@@ -29,7 +29,7 @@ def shatter_pulse(sampling_rate, duration, frequency, duty, shatter_frequency, s
     if shatter_frequency < frequency:
         raise ValueError('Shatter frequency must not be lower than major frequency.')
 
-    t = np.linspace(0, duration, sampling_rate * duration, endpoint=False)
+    t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
 
     guide_pulse, _ = square_pulse(sampling_rate, duration, frequency, duty)
     shattered_pulse = (np.array(signal.square(2 * np.pi * shatter_frequency * t, duty=shatter_duty)) / 2) + 0.5
@@ -50,7 +50,7 @@ def random_shatter_pulse(sampling_rate, duration, frequency, duty, shatter_frequ
     else:
         guide_pulse, _ = square_pulse(sampling_rate, duration, frequency, duty)
 
-    t = np.linspace(0, duration, sampling_rate * duration, endpoint=False)
+    t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
 
     if target_duty == 1.0:
         return guide_pulse, t
@@ -225,7 +225,7 @@ def simple_pulse(sampling_rate, params):
 
     total_length = round(duration + params['onset'] + params['offset'], 10) # N.B. Have to round here due to floating point representation problem
 
-    return pulse, np.linspace(0, total_length, total_length*sampling_rate)
+    return pulse, np.linspace(0, total_length, int(total_length*sampling_rate))
 
 
 def multi_simple_pulse(sampling_rate, global_onset, global_offset, params_list):
@@ -263,7 +263,7 @@ def noise_pulse(sampling_rate, params):
     amp_min = params['amp_min']
     amp_max = params['amp_max']
 
-    t = np.linspace(0, duration, sampling_rate * duration)
+    t = np.linspace(0, duration, int(sampling_rate * duration))
     np.random.seed(int(params['seed']))
     while len(guide_pulse) < len(t):
         rand_param = np.random.uniform(amp_min, amp_max)
@@ -294,7 +294,7 @@ def plume_pulse(sampling_rate, params):
     resampled = resampled * params['target_max']
 
     duration = len(resampled) / sampling_rate
-    t = np.linspace(0, duration, sampling_rate * duration)
+    t = np.linspace(0, duration, int(sampling_rate * duration))
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=resampled)) / 2) + 0.5
 
     # Attach onset and offset
@@ -302,7 +302,7 @@ def plume_pulse(sampling_rate, params):
     offset = np.zeros(int(sampling_rate * params['offset']))
 
     total_length = round(params['onset'] + params['offset'] + len(pulse) / sampling_rate, 10)
-    return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
+    return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
 
 def anti_plume_pulse(sampling_rate, params):
     plume = sio.loadmat(params['data_path'])
@@ -317,7 +317,7 @@ def anti_plume_pulse(sampling_rate, params):
     resampled = resampled * params['target_max']
 
     duration = len(resampled) / sampling_rate
-    t = np.linspace(0, duration, sampling_rate * duration)
+    t = np.linspace(0, duration, int(sampling_rate * duration))
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=resampled)) / 2) + 0.5
     anti_pulse = [1 - i for i in pulse]
 
@@ -326,7 +326,7 @@ def anti_plume_pulse(sampling_rate, params):
     offset = np.zeros(int(sampling_rate * params['offset']))
 
     total_length = round(params['onset'] + params['offset'] + len(pulse) / sampling_rate, 10)
-    return np.hstack((onset, anti_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
+    return np.hstack((onset, anti_pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
 
 
 def binary_pulse(sampling_rate, params):
@@ -347,7 +347,7 @@ def binary_pulse(sampling_rate, params):
 
 
     duration = len(bin_pulse) / sampling_rate
-    t = np.linspace(0, duration, sampling_rate * duration)
+    t = np.linspace(0, duration, int(sampling_rate * duration))
 
     if params['isShatter'] is True:
 
@@ -357,7 +357,7 @@ def binary_pulse(sampling_rate, params):
     offset = np.zeros(int(sampling_rate * params['offset']))
 
     total_length = round(params['onset'] + params['offset'] + len(bin_pulse)/sampling_rate, 10)
-    return np.hstack((onset, bin_pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
+    return np.hstack((onset, bin_pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
 
 
 def dummy_noise_pulse(sampling_rate, params):
@@ -375,7 +375,7 @@ def dummy_noise_pulse(sampling_rate, params):
     amp_min = params['amp_min']
     amp_max = params['amp_max']
 
-    t = np.linspace(0, duration, sampling_rate * duration)
+    t = np.linspace(0, duration, int(sampling_rate * duration))
 
     guide_pulse = np.ones(sampling_rate*duration)
 
@@ -386,7 +386,7 @@ def dummy_noise_pulse(sampling_rate, params):
     offset = np.zeros(sampling_rate * params['offset'])
 
     total_length = round(duration + params['onset'] + params['offset'], 10)
-    return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
+    return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
 
 
 def multi_noise_pulse(sampling_rate, global_onset, global_offset, params_list):
