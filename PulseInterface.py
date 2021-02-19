@@ -2,7 +2,7 @@ from PyPulse import PulseGeneration
 import numpy as np
 
 
-def make_pulse(sampling_rate, global_onset, global_offset, params_list):
+def make_pulse(sampling_rate, global_onset, global_offset, params_list, *,invert_chan_list=[]):
     longest_t = []
     pulses = list()
 
@@ -29,8 +29,17 @@ def make_pulse(sampling_rate, global_onset, global_offset, params_list):
         pulses.append(this_pulse)
         if len(t) > len(longest_t):
             longest_t = t
+    
+    pulse_matrix = []
+    for pulse_index, this_pulse in enumerate(pulses):
+        if pulse_index in invert_chan_list:
+            full_pulse = np.ones(len(longest_t)+ int((global_onset + global_offset) * sampling_rate))
+        else:
+            full_pulse = np.zeros(len(longest_t)+ int((global_onset + global_offset) * sampling_rate))
+        pulse_matrix.append(full_pulse)
+    pulse_matrix = np.array(pulse_matrix)
 
-    pulse_matrix = np.zeros((len(pulses), len(longest_t) + int((global_onset + global_offset) * sampling_rate)))
+#    pulse_matrix = np.zeros((len(pulses), len(longest_t) + int((global_onset + global_offset) * sampling_rate)))
 
     for p, pulse in enumerate(pulses):
         pulse_matrix[p][int(global_onset * sampling_rate):int(global_onset * sampling_rate)+len(pulse)] = pulse
