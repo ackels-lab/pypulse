@@ -41,13 +41,15 @@ def make_pulse(sampling_rate, global_onset, global_offset, params_list, *,invert
     # pulse_matrix = np.array(pulse_matrix)
 
     invert_vect = np.ones(len(pulses))
+    offset_vect = np.zeros(len(pulses))
     for i in invert_chan_list:
         invert_vect[i] = -1
+        offset_vect[i] = 1
     pulse_matrix = np.zeros((len(pulses), len(longest_t) + int((global_onset + global_offset) * sampling_rate)))
     
     for p, pulse in enumerate(pulses):
         pulse_matrix[p][int(global_onset * sampling_rate):int(global_onset * sampling_rate)+len(pulse)] = pulse
-    pulse_matrix = pulse_matrix  * invert_vect[:, np.newaxis] -invert_vect[:, np.newaxis]
+    pulse_matrix = pulse_matrix  * invert_vect[:, np.newaxis] + offset_vect[:, np.newaxis]
     t = np.linspace(0, pulse_matrix.shape[1] / sampling_rate, pulse_matrix.shape[1])
 
     return pulse_matrix, t
