@@ -55,7 +55,6 @@ def make_pulse(sampling_rate, global_onset, global_offset, params_list, *,invert
         if pulse_index in invert_chan_list:
             pulse_matrix.append(np.ones(len(longest_t) + int((global_onset + global_offset) * sampling_rate)))
         else:
-            print(len(longest_t),  int((global_onset + global_offset) * sampling_rate)))
             pulse_matrix.append(np.zeros(len(longest_t) + int((global_onset + global_offset) * sampling_rate)))
     pulse_matrix = np.array(pulse_matrix)
     for p, pulse in enumerate(pulses):
