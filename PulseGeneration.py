@@ -107,8 +107,12 @@ def random_simple_pulse(sampling_rate, params):
         pulse, t = square_pulse(sampling_rate, duration, frequency, duty)
 
     # Attach onset and offset
-    onset = np.zeros(int(sampling_rate * params['onset']))
-    offset = np.zeros(int(sampling_rate * params['offset']))
+    if params['inversion']:
+        onset = np.ones(sampling_rate * params['onset'])
+        offset = np.ones(sampling_rate * params['offset'])
+    else:
+        onset = np.zeros(sampling_rate * params['onset'])
+        offset = np.zeros(sampling_rate * params['offset'])
 
     # if we want to shadow the pulse, add this in here (repeat the pulse at a compensating duty)
     if params['shadow']:
@@ -179,8 +183,12 @@ def spec_time_pulse(sampling_rate, params):
         pulse = pulse[::-1]
 
     # Attach onset and offset
-    onset = np.zeros(int(sampling_rate * params['onset']))
-    offset = np.zeros(int(sampling_rate * params['offset']))
+    if params['inversion']:
+        onset = np.ones(sampling_rate * params['onset'])
+        offset = np.ones(sampling_rate * params['offset'])
+    else:
+        onset = np.zeros(sampling_rate * params['onset'])
+        offset = np.zeros(sampling_rate * params['offset'])
 
     pulse = np.hstack((onset, pulse, offset))
 
@@ -218,8 +226,12 @@ def simple_pulse(sampling_rate, params):
                                  params['shatter_duty'])
 
     # Attach onset and offset
-    onset = np.zeros(int(sampling_rate * params['onset']))
-    offset = np.zeros(int(sampling_rate * params['offset']))
+    if params['inversion']:
+        onset = np.ones(int(sampling_rate * params['onset']))
+        offset = np.ones(int(sampling_rate * params['offset']))
+    else:
+        onset = np.zeros(int(sampling_rate * params['onset']))
+        offset = np.zeros(int(sampling_rate * params['offset']))
 
     pulse = np.hstack((onset, pulse, offset))
 
@@ -274,8 +286,12 @@ def noise_pulse(sampling_rate, params):
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=guide_pulse)) / 2) + 0.5
 
     # Attach onset and offset
-    onset = np.zeros(sampling_rate * params['onset'])
-    offset = np.zeros(sampling_rate * params['offset'])
+    if params['inversion']:
+        onset = np.ones(sampling_rate * params['onset'])
+        offset = np.ones(sampling_rate * params['offset'])
+    else:
+        onset = np.zeros(sampling_rate * params['onset'])
+        offset = np.zeros(sampling_rate * params['offset'])
 
     total_length = round(duration + params['onset'] + params['offset'], 10)
     return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, total_length * sampling_rate)
@@ -298,8 +314,12 @@ def plume_pulse(sampling_rate, params):
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=resampled)) / 2) + 0.5
 
     # Attach onset and offset
-    onset = np.zeros(int(sampling_rate * params['onset']))
-    offset = np.zeros(int(sampling_rate * params['offset']))
+    if params['inversion']:
+        onset = np.ones(sampling_rate * params['onset'])
+        offset = np.ones(sampling_rate * params['offset'])
+    else:
+        onset = np.zeros(sampling_rate * params['onset'])
+        offset = np.zeros(sampling_rate * params['offset'])
 
     total_length = round(params['onset'] + params['offset'] + len(pulse) / sampling_rate, 10)
     return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
@@ -322,8 +342,12 @@ def anti_plume_pulse(sampling_rate, params):
     anti_pulse = [1 - i for i in pulse]
 
     # Attach onset and offset
-    onset = np.zeros(int(sampling_rate * params['onset']))
-    offset = np.zeros(int(sampling_rate * params['offset']))
+    if params['inversion']:
+        onset = np.ones(int(sampling_rate * params['onset']))
+        offset = np.ones(int(sampling_rate * params['offset']))
+    else:
+        onset = np.zeros(int(sampling_rate * params['onset']))
+        offset = np.zeros(int(sampling_rate * params['offset']))
 
     total_length = round(params['onset'] + params['offset'] + len(pulse) / sampling_rate, 10)
     return np.hstack((onset, anti_pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
@@ -353,8 +377,13 @@ def binary_pulse(sampling_rate, params):
 
         shattered_pulse = (np.array(signal.square(2 * np.pi * params["shatter_frequency"] * t, duty=params['shatter_duty'])) / 2) + 0.5
         bin_pulse = bin_pulse * shattered_pulse
-    onset = np.zeros(int(sampling_rate * params['onset']))
-    offset = np.zeros(int(sampling_rate * params['offset']))
+
+    if params['inversion']:
+        onset = np.ones(sampling_rate * params['onset'])
+        offset = np.ones(sampling_rate * params['offset'])
+    else:
+        onset = np.zeros(sampling_rate * params['onset'])
+        offset = np.zeros(sampling_rate * params['offset'])
 
     total_length = round(params['onset'] + params['offset'] + len(bin_pulse)/sampling_rate, 10)
     return np.hstack((onset, bin_pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
@@ -382,8 +411,12 @@ def dummy_noise_pulse(sampling_rate, params):
     pulse = (np.array(signal.square(2 * np.pi * params['shatter_frequency'] * t, duty=guide_pulse)) / 2) + 0.5
 
     # Attach onset and offset
-    onset = np.zeros(sampling_rate * params['onset'])
-    offset = np.zeros(sampling_rate * params['offset'])
+    if params['inversion']:
+        onset = np.ones(sampling_rate * params['onset'])
+        offset = np.ones(sampling_rate * params['offset'])
+    else:
+        onset = np.zeros(sampling_rate * params['onset'])
+        offset = np.zeros(sampling_rate * params['offset'])
 
     total_length = round(duration + params['onset'] + params['offset'], 10)
     return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
