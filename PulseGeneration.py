@@ -373,10 +373,11 @@ def binary_pulse(sampling_rate, params):
     duration = len(bin_pulse) / sampling_rate
     t = np.linspace(0, duration, int(sampling_rate * duration))
 
-    if params['isShatter'] is True:
+    if 'isShatter' in params:
+        if params['isShatter'] is True:
 
-        shattered_pulse = (np.array(signal.square(2 * np.pi * params["shatter_frequency"] * t, duty=params['shatter_duty'])) / 2) + 0.5
-        bin_pulse = bin_pulse * shattered_pulse
+            shattered_pulse = (np.array(signal.square(2 * np.pi * params["shatter_frequency"] * t, duty=params['shatter_duty'])) / 2) + 0.5
+            bin_pulse = bin_pulse * shattered_pulse
 
     if params['inversion']:
         onset = np.ones(sampling_rate * params['onset'])
