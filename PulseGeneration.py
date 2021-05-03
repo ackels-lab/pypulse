@@ -3,9 +3,12 @@ import numpy as np
 import scipy.io as sio
 
 
-def square_pulse(sampling_rate, duration, frequency, duty):
+def square_pulse(sampling_rate, duration, frequency, duty, inverted=False):
     t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
-    return (np.array(signal.square(2 * np.pi * frequency * t, duty=duty)) / 2) + 0.5, t
+    square_pulse = (np.array(signal.square(2 * np.pi * frequency * t, duty=duty)) / 2) + 0.5
+    if inverted:
+        square_pulse = -square_pulse + 1
+    return  square_pulse, t
 
 
 def extended_square_pulse(sampling_rate, duration, frequency, duty):
@@ -24,17 +27,20 @@ def extended_square_pulse(sampling_rate, duration, frequency, duty):
     return pulse, t
 
 
-def shatter_pulse(sampling_rate, duration, frequency, duty, shatter_frequency, shatter_duty):
+def shatter_pulse(sampling_rate, duration, frequency, duty, shatter_frequency, shatter_duty, inverted=False):
 
     if shatter_frequency < frequency:
         raise ValueError('Shatter frequency must not be lower than major frequency.')
 
     t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
-
-    guide_pulse, _ = square_pulse(sampling_rate, duration, frequency, duty)
+    if inverted:
+        shatter_duty = 1-shatter_duty
+    guide_pulse, _ = square_pulse(sampling_rate, duration, frequency, duty, inverted=False)
     shattered_pulse = (np.array(signal.square(2 * np.pi * shatter_frequency * t, duty=shatter_duty)) / 2) + 0.5
-
-    return guide_pulse * shattered_pulse, t
+    out_pulse = guide_pulse * shattered_pulse
+    if inverted:
+        out_pulse = out_pulse * -1 + 1
+    return out_pulse, t
 
 
 def random_shatter_pulse(sampling_rate, duration, frequency, duty, shatter_frequency, target_duty, amp_min, amp_max, extend=False):
@@ -219,11 +225,11 @@ def simple_pulse(sampling_rate, params):
             duration = (1.0 / frequency) * params['repeats']
 
     if params['isClean']:
-        pulse, t = square_pulse(sampling_rate, duration, frequency, duty)
+        pulse, t = square_pulse(sampling_rate, duration, frequency, duty, inverted=params['inversion'])
     else:
         assert params['isShatter']
         pulse, t = shatter_pulse(sampling_rate, duration, frequency, duty, params['shatter_frequency'],
-                                 params['shatter_duty'])
+                                 params['shatter_duty'], inverted=params['inversion'])
 
     # Attach onset and offset
     if params['inversion']:
@@ -375,13 +381,17 @@ def binary_pulse(sampling_rate, params):
 
     if 'isShatter' in params:
         if params['isShatter'] is True:
-
-            shattered_pulse = (np.array(signal.square(2 * np.pi * params["shatter_frequency"] * t, duty=params['shatter_duty'])) / 2) + 0.5
+            if params['inversion']:
+                shatter_duty = 1 - params['shatter_duty']
+            else:
+                shatter_duty = params['shatter_duty']
+            shattered_pulse = (np.array(signal.square(2 * np.pi * params["shatter_frequency"] * t, duty=shatter_duty)) / 2) + 0.5
             bin_pulse = bin_pulse * shattered_pulse
 
     if params['inversion']:
         onset = np.ones(int(sampling_rate * params['onset']))
         offset = np.ones(int(sampling_rate * params['offset']))
+        bin_pulse = bin_pulse * -1 + 1
     else:
         onset = np.zeros(int(sampling_rate * params['onset']))
         offset = np.zeros(int(sampling_rate * params['offset']))
