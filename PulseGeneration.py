@@ -388,6 +388,7 @@ def binary_pulse(sampling_rate, params):
             shattered_pulse = (np.array(signal.square(2 * np.pi * params["shatter_frequency"] * t, duty=shatter_duty)) / 2) + 0.5
             bin_pulse = bin_pulse * shattered_pulse
 
+    bin_pulse = np.array(bin_pulse)
     if params['inversion']:
         onset = np.ones(int(sampling_rate * params['onset']))
         offset = np.ones(int(sampling_rate * params['offset']))
