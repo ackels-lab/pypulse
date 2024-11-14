@@ -1,7 +1,7 @@
 import scipy.signal as signal
 import numpy as np
-import scipy.io as sio
-
+#import scipy.io as sio
+import mat73
 
 def square_pulse(sampling_rate, duration, frequency, duty, inverted=False):
     t = np.linspace(0, duration, int(sampling_rate * duration), endpoint=False)
@@ -304,8 +304,10 @@ def noise_pulse(sampling_rate, params):
 
 
 def plume_pulse(sampling_rate, params):
-    plume = sio.loadmat(params['data_path'])
-    plume = plume['plume'][0]
+    #plume = sio.loadmat(params['data_path'])    #For version 7 mat files
+    plume = mat73.loadmat(params['data_path'])
+    #plume = plume['plume'][0]    #For version 7 mat files
+    plume = plume['plume']
 
     # resample to match sampling rate
     resampled = signal.resample(plume, int(len(plume)*(sampling_rate / params['data_fs'])))
@@ -331,8 +333,10 @@ def plume_pulse(sampling_rate, params):
     return np.hstack((onset, pulse, offset)), np.linspace(0, total_length, int(total_length * sampling_rate))
 
 def anti_plume_pulse(sampling_rate, params):
-    plume = sio.loadmat(params['data_path'])
-    plume = plume['plume'][0]
+    #plume = sio.loadmat(params['data_path']) #For version 7 mat files
+    plume = mat73.loadmat(params['data_path'])
+    #plume = plume['plume'][0]    #For version 7 mat files
+    plume = plume['plume']
 
     # resample to match sampling rate
     resampled = signal.resample(plume, int(len(plume)*(sampling_rate / params['data_fs'])))
